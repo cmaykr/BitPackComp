@@ -6,16 +6,16 @@
 #include <cmath>
 #include <bitset>
 
-int main(int argc, int** argv)
+int main(int argc, char** argv)
 {
     std::random_device rd;
-    const size_t size = 100000;
+    const size_t size = 100;
 
     std::mt19937 gen(rd());
     std::normal_distribution<> range(50, 100);
 
     
-    std::string filename {"dataset.txt"};
+    std::string filename {"dataset"};
 
     std::ofstream ofs {filename};
     std::array<int, size> sequence{};
@@ -28,43 +28,44 @@ int main(int argc, int** argv)
         {
             parameter *= -1;
         }
-        //ofs.write(parameter.c_str(), parameter.size());
-        ofs << parameter << std::endl;
+        ofs.write(reinterpret_cast<const char*>(&parameter), sizeof(parameter));
+        //ofs << parameter << std::endl;
         sequence.at(i) = parameter;
     }
     std::cout << "List of integers using: " << sequence.size() * 4 << " bytes." << std::endl;
 
     std::ifstream ifs {filename};
-    int n;
-    ifs >> n;
-    // std::cout << n << std::endl;
-
-    int blocksize = 64;
-    int bitsIndex = 4;
-    int lastValue = 0;
-    int highInt, lowInt;
-    highInt |= 2 << 32 - bitsIndex;
-    int bitsInt = highInt >> blocksize / 2 - bitsIndex;
-    std::cout << "Bits per block: " << bitsInt << std::endl;
-    std::cout << std::bitset<32>(bitsInt) << std::endl;
-    for (int i{}; i < 1; i += 2)
+    std::ofstream ofs2 {"binary_dataset.txt"};
+    char byte{};
+    int byteNum = 1;
+    while( ifs.get(byte))
     {
-        int value = sequence.at(i);
-
-        highInt = sequence.at(i);
-        lowInt = sequence.at(i+1);
-
-        switch (value)
-        {
-        case :
-            /* code */
-            break;
-        
-        default:
-            break;
-        }
-
+        std::string binaryString {"Byte at : " + std::to_string(byteNum) + " is: " + std::to_string(byte) + "\n"};
+        std::cout << (int)byte << std::endl;
+        byteNum++;
+        ofs2 << binaryString;
     }
+    // int n;
+    // ifs >> n;
+    // // std::cout << n << std::endl;
+
+    // int blocksize = 64;
+    // int bitsIndex = 4;
+    // int lastValue = 0;
+    // int highInt, lowInt;
+    // highInt |= 2 << 32 - bitsIndex;
+    // uint64_t bitsInt = highInt & (15 << 32 - bitsIndex);
+    // bitsInt = bitsInt >> 32 - bitsIndex;
+    // std::cout << "Bits per block: " << bitsInt << std::endl;
+    // std::cout << std::bitset<32>(highInt) << std::endl;
+    // for (int i{}; i < 1; i += 2)
+    // {
+    //     int value = sequence.at(i);
+
+    //     highInt = sequence.at(i);
+    //     lowInt = sequence.at(i+1);
+
+    // }
 
     return 0;
 }
